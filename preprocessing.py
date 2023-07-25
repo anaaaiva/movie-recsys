@@ -7,6 +7,8 @@ import nltk
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel, cosine_similarity
 
 movies_metadata = pd.read_csv('the_movies_dataset\movies_metadata.csv')
 credits = pd.read_csv('the_movies_dataset/credits.csv')
@@ -22,7 +24,8 @@ keywords.id = keywords.id.astype('int')
 df = df.merge(credits, on='id')
 df = df.merge(keywords, on='id')
 
-df['title'] = df['title'].astype('str').apply(lambda x: str.lower(x.replace(" ", "")))
+df['title'] = df['title'].astype('str')
+df['preprocessed_title'] = df['title'].apply(lambda x: str.lower(x.replace(" ", "")))
 
 df['overview'] = df['overview'].fillna('')
 
@@ -112,7 +115,7 @@ def preprocess_sentences(text):
 df['preprocessed_overview'] = df['overview'].apply(preprocess_sentences)
 df['preprocessed_tagline'] = df['tagline'].apply(preprocess_sentences)
 
-idxs = ['keywords', 'cast', 'genres', 'production_companies', 'preprocessed_tagline', 'preprocessed_overview', 'crew', 'title']
+idxs = ['keywords', 'cast', 'genres', 'production_companies', 'preprocessed_tagline', 'preprocessed_overview', 'crew', 'preprocessed_title']
 for idx in idxs:
     df[idx] = df[idx].apply(lambda x: ' '.join(map(str, x)) if isinstance(x, list) else str(x))
 

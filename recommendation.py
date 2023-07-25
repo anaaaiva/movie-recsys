@@ -3,7 +3,6 @@ import numpy as np
 from ast import literal_eval #parse the stringified features into their corresponding python objects
     
 def top_n_recommender(n, df, genre, percentile=0.95):
-    
     if genre != 'All':
         s = df.apply(lambda x: pd.Series(x['genres']),axis=1).stack().reset_index(level=1, drop=True)
         s.name = 'genres'
@@ -26,5 +25,16 @@ def top_n_recommender(n, df, genre, percentile=0.95):
     
     return qualified
 
-
-        
+def nlp_based_recommenderer(n, df, title, cosine_sim):
+    df = df.reset_index()
+    titles = df['title']
+    indices = pd.Series(df.index, index=df['title'])
+    
+    idx = str(indices[title])
+    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:n+1]
+    
+    movie_indices = [i[0] for i in sim_scores]
+    
+    return titles.iloc[movie_indices]  
