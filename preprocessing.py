@@ -7,7 +7,6 @@ import nltk
 from nltk.stem.snowball import SnowballStemmer
 from nltk.stem import WordNetLemmatizer
 from nltk.corpus import stopwords
-import warnings; warnings.simplefilter('ignore')
 
 movies_metadata = pd.read_csv('the_movies_dataset\movies_metadata.csv')
 credits = pd.read_csv('the_movies_dataset/credits.csv')
@@ -123,3 +122,5 @@ def concat_columns(row):
 df['soup'] = df[idxs].apply(concat_columns, axis=1)
 
 df.to_csv('the_movies_dataset/preprocessed_movies_metadata.csv', index=False)
+
+df.to_pickle('the_movies_dataset/preprocessed_movies_metadata.pkl')
